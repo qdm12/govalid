@@ -26,15 +26,14 @@ func Validate(value string, options ...Option) (rootURL string, err error) {
 		}
 	}
 
-	rootURL = path.Clean(value)
+	rootURL = strings.TrimSpace(value)
+
+	// Clean path and remove trailing slash(es)
+	// we lready have / from paths of router
+	rootURL = path.Clean(rootURL)
 
 	if !rootURLRegex.MatchString(rootURL) {
 		return "", fmt.Errorf("%w: %s", ErrValueNotValid, rootURL)
-	}
-
-	for strings.HasSuffix(rootURL, "/") {
-		// already have / from paths of router
-		rootURL = strings.TrimSuffix(rootURL, "/")
 	}
 
 	return rootURL, nil

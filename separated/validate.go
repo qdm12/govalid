@@ -51,7 +51,7 @@ func Validate(value string, options ...Option) (
 	var invalidValues []valuePosition
 
 	for i, value := range values {
-		if !isValueAccepted(value, acceptedSet) {
+		if _, ok := acceptedSet[value]; !ok {
 			invalidValues = append(invalidValues, valuePosition{i + 1, value})
 		}
 	}
@@ -71,12 +71,4 @@ func Validate(value string, options ...Option) (
 
 	return nil, fmt.Errorf("%w: %s; accepted values are: %s",
 		ErrValueNotValid, invalidMessage, acceptedValues)
-}
-
-func isValueAccepted(value string, acceptedSet map[string]struct{}) (ok bool) {
-	if len(acceptedSet) == 0 {
-		return true
-	}
-	_, ok = acceptedSet[value]
-	return ok
 }

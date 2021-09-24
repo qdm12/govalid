@@ -115,8 +115,6 @@ func main() {
 
 ### More validations
 
-- Unit tests for `rooturl`, `separated` and `url`
-- Unit tests for `validator.go`
 - [ ] Validate phone numbers
   - [ ] International number option
 - [ ] Validate domain names and/or hostnames

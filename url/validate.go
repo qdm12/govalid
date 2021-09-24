@@ -26,7 +26,7 @@ func Validate(value string, options ...Option) (u *url.URL, err error) {
 
 	u, err = url.Parse(value)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s: %s", ErrURLNotValid, value, err)
+		return nil, fmt.Errorf("%w: %s", ErrURLNotValid, err)
 	}
 
 	schemeIsValid := false
