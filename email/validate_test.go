@@ -20,7 +20,7 @@ func Test_Validate(t *testing.T) {
 	}{
 		"option error": {
 			options: []Option{badOption},
-			err:     errors.New("option error: some error"),
+			err:     ErrOption,
 		},
 		"valid email": {
 			value: "a@a.com",
@@ -32,7 +32,7 @@ func Test_Validate(t *testing.T) {
 		},
 		"bad format": {
 			value: " aa.com ",
-			err:   errors.New("email format is not valid: aa.com"),
+			err:   ErrEmailFormatNotValid,
 		},
 		"gmail MX lookup": {
 			value:   "a@gmail.com",
@@ -42,7 +42,7 @@ func Test_Validate(t *testing.T) {
 		"localhost.com MX lookup": {
 			value:   "a@localhost.example",
 			options: []Option{OptionMXLookup()},
-			err:     errors.New("email host is not reachable: lookup localhost.example on 127.0.0.11:53: no such host"),
+			err:     ErrEmailHostUnreachable,
 		},
 	}
 
@@ -53,16 +53,8 @@ func Test_Validate(t *testing.T) {
 
 			email, err := Validate(testCase.value, testCase.options...)
 
-			if testCase.err != nil {
-				if err == nil {
-					t.Fatalf("expected an error but got nil instead")
-				} else if testCase.err.Error() != err.Error() {
-					t.Errorf("expected error %q but got %q", testCase.err, err)
-				}
-			} else {
-				if err != nil {
-					t.Errorf("received an unexpected error %q", err)
-				}
+			if !errors.Is(err, testCase.err) {
+				t.Errorf("expected error %q but got %q", testCase.err, err)
 			}
 
 			if testCase.email != email {
