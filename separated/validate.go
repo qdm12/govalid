@@ -27,6 +27,17 @@ func Validate(value string, options ...Option) (
 	}
 
 	values = strings.Split(value, s.separator)
+	if s.ignoreEmpty {
+		i := 0
+		for _, value := range values {
+			if value == "" {
+				continue
+			}
+			values[i] = value
+			i++
+		}
+		values = values[:i]
+	}
 
 	if s.lowercase {
 		for i := range values {

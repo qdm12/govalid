@@ -27,3 +27,11 @@ func OptionLowercase() Option {
 		return nil
 	}
 }
+
+// OptionIgnoreEmpty ignores the empty string value from split values.
+func OptionIgnoreEmpty() Option {
+	return func(s *settings) (err error) {
+		s.ignoreEmpty = true
+		return nil
+	}
+}

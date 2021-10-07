@@ -50,6 +50,16 @@ func Test_Validate(t *testing.T) {
 			options: []Option{OptionAccepted("b", "a")},
 			values:  []string{"a", "b"},
 		},
+		"ignore empty": {
+			value:   "",
+			options: []Option{OptionIgnoreEmpty()},
+			values:  []string{},
+		},
+		"ignore empty multiple": {
+			value:   "a,,,b",
+			options: []Option{OptionIgnoreEmpty()},
+			values:  []string{"a", "b"},
+		},
 	}
 
 	for name, testCase := range testCases {
@@ -77,7 +87,7 @@ func Test_Validate(t *testing.T) {
 
 			for i := range values {
 				if testCase.values[i] != values[i] {
-					t.Errorf("expected port %s but got %s", testCase.values[i], values[i])
+					t.Errorf("expected %s but got %s", testCase.values[i], values[i])
 				}
 			}
 		})
