@@ -15,7 +15,7 @@ func Test_Validate(t *testing.T) {
 	testCases := map[string]struct {
 		value   string
 		options []Option
-		binary  bool
+		binary  *bool
 		err     error
 	}{
 		"option error": {
@@ -24,10 +24,11 @@ func Test_Validate(t *testing.T) {
 		},
 		"default enabled": {
 			value:  "yes",
-			binary: true,
+			binary: ptrToBool(true),
 		},
 		"default disabled": {
-			value: "off",
+			value:  "off",
+			binary: ptrToBool(false),
 		},
 		"invalid value": {
 			value: "value",
@@ -36,12 +37,14 @@ func Test_Validate(t *testing.T) {
 		"enabled with option": {
 			value:   "Custom",
 			options: []Option{OptionEnabled("custom")},
-			binary:  true,
+			binary:  ptrToBool(true),
 		},
 		"disabled with option": {
 			value:   "Custom",
 			options: []Option{OptionDisabled("custom")},
+			binary:  ptrToBool(false),
 		},
+		"empty string": {},
 	}
 
 	for name, testCase := range testCases {
@@ -62,9 +65,14 @@ func Test_Validate(t *testing.T) {
 					t.Errorf("received an unexpected error %q", err)
 				}
 			}
-
-			if testCase.binary != binary {
-				t.Errorf("expected binary %t but got %t", testCase.binary, binary)
+			switch {
+			case testCase.binary == nil && binary == nil:
+			case testCase.binary == nil && binary != nil:
+				t.Errorf("expected binary to be nil but got %v", binary)
+			case testCase.binary != nil && binary == nil:
+				t.Errorf("expected binary to be %v but got nil", *testCase.binary)
+			case *testCase.binary != *binary:
+				t.Errorf("expected binary %t but got %t", *testCase.binary, *binary)
 			}
 		})
 	}

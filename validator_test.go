@@ -23,7 +23,7 @@ func Test_Validator(t *testing.T) {
 		const value = "on"
 		output, err := ValidateBinary(value)
 		assertNoError(t, err)
-		assertBool(t, true, output)
+		assertBoolPtr(t, ptrTo(true), output)
 	})
 
 	t.Run("digest", func(t *testing.T) {
@@ -104,10 +104,16 @@ func assertString(t *testing.T, expected, actual string) {
 	}
 }
 
-func assertBool(t *testing.T, expected, actual bool) {
+func assertBoolPtr(t *testing.T, expected, actual *bool) {
 	t.Helper()
-	if expected != actual {
-		t.Errorf("expected %t got %t", expected, actual)
+	switch {
+	case expected == nil && actual == nil:
+	case expected == nil && actual != nil:
+		t.Fatalf("expected a nil bool pointer but got %t", *actual)
+	case expected != nil && actual == nil:
+		t.Fatalf("expected a nil bool pointer but got %t", *actual)
+	case *expected != *actual:
+		t.Errorf("expected %t but got %t", *expected, *actual)
 	}
 }
 
@@ -147,3 +153,5 @@ func assertURL(t *testing.T, expected, actual *url.URL) {
 		t.Errorf("expected %s but got %s", expected.String(), actual.String())
 	}
 }
+
+func ptrTo[T any](value T) *T { return &value }

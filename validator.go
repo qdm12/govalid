@@ -20,7 +20,7 @@ func ValidateAddress(value string, options ...address.Option) (err error) {
 	return address.Validate(value, options...)
 }
 
-func ValidateBinary(value string, options ...binary.Option) (enabled bool, err error) {
+func ValidateBinary(value string, options ...binary.Option) (enabled *bool, err error) {
 	return binary.Validate(value, options...)
 }
 
