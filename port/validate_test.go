@@ -56,7 +56,9 @@ func Test_Validate(t *testing.T) {
 		"privileged port without root": {
 			value:   "100",
 			options: []Option{OptionPortListening(1000)},
-			err:     errors.New("invalid listening port: cannot use privileged ports (1 to 1023) when running without root: 100"),
+			err: errors.New("invalid listening port: " +
+				"cannot use privileged ports (1 to 1023) when running " +
+				"without root: 100"),
 		},
 		"privileged port without root allowed": {
 			value:   "100",

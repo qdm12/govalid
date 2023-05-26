@@ -21,12 +21,9 @@ var (
 // Validate verifies the value is a valid port number and
 // returns it as an uint16.
 func Validate(value string, options ...Option) (port uint16, err error) {
-	s := newSettings()
-	for _, option := range options {
-		err := option(s)
-		if err != nil {
-			return 0, fmt.Errorf("%w: %s", ErrOption, err)
-		}
+	s, err := newSettings(options...)
+	if err != nil {
+		return 0, err
 	}
 
 	const minPort, maxPort = 1, 65535
@@ -48,7 +45,7 @@ func Validate(value string, options ...Option) (port uint16, err error) {
 	if s.isListening {
 		err = checkListeningPort(port, s.uid, s.privilegedAllowedPorts)
 		if err != nil {
-			return 0, fmt.Errorf("%w: %s", ErrListeningPort, err)
+			return 0, fmt.Errorf("%w: %w", ErrListeningPort, err)
 		}
 	}
 

@@ -3,6 +3,8 @@ package binary
 import (
 	"errors"
 	"testing"
+
+	"github.com/qdm12/govalid/internal/helpers"
 )
 
 func Test_Validate(t *testing.T) {
@@ -54,17 +56,8 @@ func Test_Validate(t *testing.T) {
 
 			binary, err := Validate(testCase.value, testCase.options...)
 
-			if testCase.err != nil {
-				if err == nil {
-					t.Fatalf("expected an error but got nil instead")
-				} else if testCase.err.Error() != err.Error() {
-					t.Errorf("expected error %q but got %q", testCase.err, err)
-				}
-			} else {
-				if err != nil {
-					t.Errorf("received an unexpected error %q", err)
-				}
-			}
+			helpers.AssertError(t, testCase.err, err)
+
 			switch {
 			case testCase.binary == nil && binary == nil:
 			case testCase.binary == nil && binary != nil:

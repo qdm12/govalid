@@ -18,25 +18,14 @@ var (
 // The string comparisons do not consider case sensitivity.
 func Validate(value string, options ...Option) (
 	values []string, err error) {
-	s := newSettings()
-	for _, option := range options {
-		err := option(s)
-		if err != nil {
-			return nil, fmt.Errorf("%w: %s", ErrOption, err)
-		}
+	s, err := newSettings(options...)
+	if err != nil {
+		return nil, err
 	}
 
 	values = strings.Split(value, s.separator)
 	if s.ignoreEmpty {
-		i := 0
-		for _, value := range values {
-			if value == "" {
-				continue
-			}
-			values[i] = value
-			i++
-		}
-		values = values[:i]
+		values = removeEmpty(values)
 	}
 
 	if s.lowercase {
@@ -55,10 +44,6 @@ func Validate(value string, options ...Option) (
 		acceptedSet[accepted] = struct{}{}
 	}
 
-	type valuePosition struct {
-		position int
-		value    string
-	}
 	var invalidValues []valuePosition
 
 	for i, value := range values {
@@ -71,7 +56,29 @@ func Validate(value string, options ...Option) (
 		return values, nil
 	}
 
-	acceptedValues := strings.Join(s.accepted, ", ")
+	return nil, makeInvalidError(s.accepted, invalidValues)
+}
+
+func removeEmpty(values []string) (nonEmptyValues []string) {
+	i := 0
+	for _, value := range values {
+		if value == "" {
+			continue
+		}
+		values[i] = value
+		i++
+	}
+	values = values[:i]
+	return values
+}
+
+type valuePosition struct {
+	position int
+	value    string
+}
+
+func makeInvalidError(accepted []string, invalidValues []valuePosition) (err error) {
+	acceptedValues := strings.Join(accepted, ", ")
 
 	invalidMessages := make([]string, len(invalidValues))
 	for i := range invalidValues {
@@ -80,6 +87,6 @@ func Validate(value string, options ...Option) (
 	}
 	invalidMessage := strings.Join(invalidMessages, ", ")
 
-	return nil, fmt.Errorf("%w: %s; accepted values are: %s",
+	return fmt.Errorf("%w: %s; accepted values are: %s",
 		ErrValueNotValid, invalidMessage, acceptedValues)
 }

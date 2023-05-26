@@ -20,13 +20,13 @@ func Validate(value string, options ...Option) (u *url.URL, err error) {
 	for _, option := range options {
 		err := option(s)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %s", ErrOption, err)
+			return nil, fmt.Errorf("%w: %w", ErrOption, err)
 		}
 	}
 
 	u, err = url.Parse(value)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrURLNotValid, err)
+		return nil, fmt.Errorf("%w: %w", ErrURLNotValid, err)
 	}
 
 	schemeIsValid := false

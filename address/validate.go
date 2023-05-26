@@ -21,13 +21,13 @@ func Validate(value string, options ...Option) (err error) {
 	for _, option := range options {
 		err := option(&s)
 		if err != nil {
-			return fmt.Errorf("%w: %s", ErrOption, err)
+			return fmt.Errorf("%w: %w", ErrOption, err)
 		}
 	}
 
 	_, portStr, err := net.SplitHostPort(value)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrValueNotValid, err)
+		return fmt.Errorf("%w: %w", ErrValueNotValid, err)
 	}
 
 	_, err = port.Validate(portStr, s.portOptions...)

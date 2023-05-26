@@ -20,7 +20,7 @@ func Validate(value string, options ...Option) (integer int, err error) {
 	for _, option := range options {
 		err := option(s)
 		if err != nil {
-			return 0, fmt.Errorf("%w: %s", ErrOption, err)
+			return 0, fmt.Errorf("%w: %w", ErrOption, err)
 		}
 	}
 

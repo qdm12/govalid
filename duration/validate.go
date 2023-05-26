@@ -20,13 +20,13 @@ func Validate(value string, options ...Option) (duration time.Duration, err erro
 	for _, option := range options {
 		err := option(s)
 		if err != nil {
-			return 0, fmt.Errorf("%w: %s", ErrOption, err)
+			return 0, fmt.Errorf("%w: %w", ErrOption, err)
 		}
 	}
 
 	duration, err = time.ParseDuration(value)
 	if err != nil {
-		return 0, fmt.Errorf("%w: %s: %s", ErrDurationMalformed, value, err)
+		return 0, fmt.Errorf("%w: %s: %w", ErrDurationMalformed, value, err)
 	}
 
 	if !s.allowNegative && duration < 0 {

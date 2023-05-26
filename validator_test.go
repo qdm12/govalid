@@ -143,6 +143,7 @@ func assertStringsSlice(t *testing.T, expected, actual []string) {
 }
 
 func assertURL(t *testing.T, expected, actual *url.URL) {
+	t.Helper()
 	switch {
 	case expected == nil && actual == nil: // success
 	case expected == nil && actual != nil:

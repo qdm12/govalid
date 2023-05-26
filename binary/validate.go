@@ -24,7 +24,7 @@ func Validate(value string, options ...Option) (enabled *bool, err error) {
 	for _, option := range options {
 		err := option(s)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %s", ErrOption, err)
+			return nil, fmt.Errorf("%w: %w", ErrOption, err)
 		}
 	}
 
@@ -41,10 +41,12 @@ func Validate(value string, options ...Option) (enabled *bool, err error) {
 	}
 
 	if value == "" {
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	}
 
-	choices := append(s.enabled, s.disabled...)
+	choices := make([]string, 0, len(s.enabled)+len(s.disabled))
+	choices = append(choices, s.enabled...)
+	choices = append(choices, s.disabled...)
 	return nil, fmt.Errorf("%w: value %q can only be one of %s",
 		ErrValueNotValid, value, helpers.CommaJoin(choices))
 }

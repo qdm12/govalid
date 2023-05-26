@@ -3,8 +3,7 @@ package digest
 import (
 	"errors"
 	"fmt"
-
-	"github.com/qdm12/govalid/internal/helpers"
+	"regexp"
 )
 
 var (
@@ -19,11 +18,11 @@ func Validate(value string, digestType Type, options ...Option) (err error) {
 	for _, option := range options {
 		err := option(s)
 		if err != nil {
-			return fmt.Errorf("%w: %s", ErrOption, err)
+			return fmt.Errorf("%w: %w", ErrOption, err)
 		}
 	}
 
-	ok := false
+	var ok bool
 	switch digestType {
 	case SHA256Hex:
 		ok = match64BytesHex.MatchString(value)
@@ -46,6 +45,6 @@ const (
 )
 
 var (
-	match32BytesHex = helpers.MatchRegex(regex32BytesHex)
-	match64BytesHex = helpers.MatchRegex(regex64BytesHex)
+	match32BytesHex = regexp.MustCompile("^" + regex32BytesHex + "$")
+	match64BytesHex = regexp.MustCompile("^" + regex64BytesHex + "$")
 )

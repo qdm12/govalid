@@ -21,7 +21,7 @@ func Validate(value string, options ...Option) (rootURL string, err error) {
 	for _, option := range options {
 		err := option(s)
 		if err != nil {
-			return "", fmt.Errorf("%w: %s", ErrOption, err)
+			return "", fmt.Errorf("%w: %w", ErrOption, err)
 		}
 	}
 

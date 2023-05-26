@@ -4,9 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"regexp"
 	"strings"
-
-	"github.com/qdm12/govalid/internal/helpers"
 )
 
 var (
@@ -17,7 +16,7 @@ var (
 
 const regexEmail = `[a-zA-Z0-9-_.+]+@[a-zA-Z0-9-_.]+\.[a-zA-Z]{2,10}`
 
-var emailMatcher = helpers.MatchRegex(regexEmail)
+var emailMatcher = regexp.MustCompile("^" + regexEmail + "$")
 
 // Validate verifies the value is an email address and does
 // additional checks for any option given.
@@ -27,7 +26,7 @@ func Validate(value string, options ...Option) (
 	for _, option := range options {
 		err := option(&s)
 		if err != nil {
-			return "", fmt.Errorf("%w: %s", ErrOption, err)
+			return "", fmt.Errorf("%w: %w", ErrOption, err)
 		}
 	}
 
@@ -40,8 +39,7 @@ func Validate(value string, options ...Option) (
 	if s.mxLookup {
 		err = emailMxLookup(email)
 		if err != nil {
-			return "", fmt.Errorf("%w: %s",
-				ErrEmailHostUnreachable, err)
+			return "", fmt.Errorf("%w: %w", ErrEmailHostUnreachable, err)
 		}
 	}
 
