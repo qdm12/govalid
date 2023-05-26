@@ -26,6 +26,7 @@ func Test_Validate(t *testing.T) {
 			value: "a",
 			err:   errors.New("value is not valid: a"),
 		},
+		"empty string": {},
 		"dirty root url": {
 			value:   " /some//path ",
 			rootURL: "/some/path",
@@ -56,7 +57,7 @@ func Test_Validate(t *testing.T) {
 			}
 
 			if testCase.rootURL != rootURL {
-				t.Errorf("expected port %s but got %s", testCase.rootURL, rootURL)
+				t.Errorf("expected root url %s but got %s", testCase.rootURL, rootURL)
 			}
 		})
 	}

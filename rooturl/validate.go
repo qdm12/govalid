@@ -3,12 +3,11 @@ package rooturl
 import (
 	"errors"
 	"fmt"
-	"path"
 	"regexp"
 	"strings"
 )
 
-var rootURLRegex = regexp.MustCompile(`^\/[a-zA-Z0-9\-_/\+]*$`)
+var rootURLRegex = regexp.MustCompile(`^(|\/[a-zA-Z0-9\-_/\+]*)$`)
 
 var (
 	ErrOption        = errors.New("option error")
@@ -29,8 +28,13 @@ func Validate(value string, options ...Option) (rootURL string, err error) {
 	rootURL = strings.TrimSpace(value)
 
 	// Clean path and remove trailing slash(es)
-	// we lready have / from paths of router
-	rootURL = path.Clean(rootURL)
+	// we already have / from paths of router
+	for strings.HasSuffix(rootURL, "/") {
+		rootURL = strings.TrimSuffix(rootURL, "/")
+	}
+	for strings.Contains(rootURL, "//") {
+		rootURL = strings.ReplaceAll(rootURL, "//", "/")
+	}
 
 	if !rootURLRegex.MatchString(rootURL) {
 		return "", fmt.Errorf("%w: %s", ErrValueNotValid, rootURL)
