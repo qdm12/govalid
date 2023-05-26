@@ -16,21 +16,6 @@ import (
 	govalidurl "github.com/qdm12/govalid/url"
 )
 
-var _ Interface = (*Validator)(nil)
-
-type Interface interface {
-	ValidateAddress(value string, options ...address.Option) (addr string, err error)
-	ValidateBinary(value string, options ...binary.Option) (enabled bool, err error)
-	ValidateDigest(value string, digestType digest.Type, options ...digest.Option) (err error)
-	ValidateDuration(value string, options ...duration.Option) (duration time.Duration, err error)
-	ValidateEmail(value string, options ...email.Option) (email string, err error)
-	ValidateInteger(value string, options ...integer.Option) (integer int, err error)
-	ValidatePort(value string, options ...port.Option) (port uint16, err error)
-	ValidateRootURL(value string, options ...rooturl.Option) (rootURL string, err error)
-	ValidateSeparated(value string, options ...separated.Option) (slice []string, err error)
-	ValidateURL(value string, options ...govalidurl.Option) (url *url.URL, err error)
-}
-
 type Validator struct{}
 
 func New() *Validator {
