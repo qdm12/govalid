@@ -11,12 +11,10 @@ import (
 func Test_Validator(t *testing.T) {
 	t.Parallel()
 
-	validator := New()
-
 	t.Run("address", func(t *testing.T) {
 		t.Parallel()
 		const value = ":8000"
-		output, err := validator.ValidateAddress(value)
+		output, err := ValidateAddress(value)
 		assertNoError(t, err)
 		assertString(t, ":8000", output)
 	})
@@ -24,7 +22,7 @@ func Test_Validator(t *testing.T) {
 	t.Run("binary", func(t *testing.T) {
 		t.Parallel()
 		const value = "on"
-		output, err := validator.ValidateBinary(value)
+		output, err := ValidateBinary(value)
 		assertNoError(t, err)
 		assertBool(t, true, output)
 	})
@@ -32,14 +30,14 @@ func Test_Validator(t *testing.T) {
 	t.Run("digest", func(t *testing.T) {
 		t.Parallel()
 		const value = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-		err := validator.ValidateDigest(value, digest.MD5Hex)
+		err := ValidateDigest(value, digest.MD5Hex)
 		assertNoError(t, err)
 	})
 
 	t.Run("duration", func(t *testing.T) {
 		t.Parallel()
 		const value = "1s"
-		output, err := validator.ValidateDuration(value)
+		output, err := ValidateDuration(value)
 		assertNoError(t, err)
 		assertDuration(t, time.Second, output)
 	})
@@ -47,7 +45,7 @@ func Test_Validator(t *testing.T) {
 	t.Run("email", func(t *testing.T) {
 		t.Parallel()
 		const value = "a@a.com"
-		output, err := validator.ValidateEmail(value)
+		output, err := ValidateEmail(value)
 		assertNoError(t, err)
 		assertString(t, "a@a.com", output)
 	})
@@ -55,7 +53,7 @@ func Test_Validator(t *testing.T) {
 	t.Run("integer", func(t *testing.T) {
 		t.Parallel()
 		const value = "5"
-		output, err := validator.ValidateInteger(value)
+		output, err := ValidateInteger(value)
 		assertNoError(t, err)
 		assertInteger(t, 5, output)
 	})
@@ -63,7 +61,7 @@ func Test_Validator(t *testing.T) {
 	t.Run("port", func(t *testing.T) {
 		t.Parallel()
 		const value = "5000"
-		output, err := validator.ValidatePort(value)
+		output, err := ValidatePort(value)
 		assertNoError(t, err)
 		assertInteger(t, 5000, int(output))
 	})
@@ -71,7 +69,7 @@ func Test_Validator(t *testing.T) {
 	t.Run("root url", func(t *testing.T) {
 		t.Parallel()
 		const value = "/rooturl"
-		output, err := validator.ValidateRootURL(value)
+		output, err := ValidateRootURL(value)
 		assertNoError(t, err)
 		assertString(t, "/rooturl", output)
 	})
@@ -79,7 +77,7 @@ func Test_Validator(t *testing.T) {
 	t.Run("separated", func(t *testing.T) {
 		t.Parallel()
 		const value = "a,b,c"
-		output, err := validator.ValidateSeparated(value)
+		output, err := ValidateSeparated(value)
 		assertNoError(t, err)
 		assertStringsSlice(t, []string{"a", "b", "c"}, output)
 	})
@@ -87,7 +85,7 @@ func Test_Validator(t *testing.T) {
 	t.Run("url", func(t *testing.T) {
 		t.Parallel()
 		const value = "http://a.com"
-		output, err := validator.ValidateURL(value)
+		output, err := ValidateURL(value)
 		assertNoError(t, err)
 		assertURL(t, &url.URL{Scheme: "http", Host: "a.com"}, output)
 	})

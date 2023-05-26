@@ -64,9 +64,9 @@ func main() {
 
 ```
 
-### With `Validator`
+### With `govalid` functions
 
-If you prefer, I also defined a `Validator` object at the root of this repository, for example:
+If you prefer, I also defined wrapper functions at the root of this repository, for example:
 
 ```go
 package main
@@ -82,9 +82,7 @@ func main() {
     const s = ":8000"
     const uid = 1000
 
-    validator := govalid.New()
-
-    addr, err := validator.ValidateAddress(s, address.OptionListening(uid))
+    addr, err := govalid.ValidateAddress(s, address.OptionListening(uid))
     if err != nil {
         fmt.Println(err)
         return
