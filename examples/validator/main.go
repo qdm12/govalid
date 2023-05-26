@@ -11,10 +11,10 @@ func main() {
 	const s = ":8000"
 	const uid = 1000
 
-	addr, err := govalid.ValidateAddress(s, address.OptionListening(uid))
+	err := govalid.ValidateAddress(s, address.OptionListening(uid))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Address: ", addr)
+	fmt.Println("Address", s, "is valid")
 }

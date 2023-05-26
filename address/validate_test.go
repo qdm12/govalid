@@ -15,7 +15,6 @@ func Test_Validate(t *testing.T) {
 	testCases := map[string]struct {
 		value   string
 		options []Option
-		address string
 		err     error
 	}{
 		"option error": {
@@ -29,7 +28,6 @@ func Test_Validate(t *testing.T) {
 		"listening on zero port": {
 			value:   "1.2.3.4:0",
 			options: []Option{OptionListening(1000)},
-			address: "1.2.3.4:0",
 		},
 		"listening on privileged port without root": {
 			value:   "1.2.3.4:100",
@@ -39,20 +37,17 @@ func Test_Validate(t *testing.T) {
 		"listening on privileged port with root": {
 			value:   "1.2.3.4:100",
 			options: []Option{OptionListening(0)},
-			address: "1.2.3.4:100",
 		},
 		"address with zero port": {
 			value: "1.2.3.4:0",
 			err:   errors.New("port cannot be lower than 1: 0"),
 		},
 		"valid address": {
-			value:   "1.2.3.4:8000",
-			address: "1.2.3.4:8000",
+			value: "1.2.3.4:8000",
 		},
 		"valid listening address without root": {
 			value:   "1.2.3.4:8000",
 			options: []Option{OptionListening(1000)},
-			address: "1.2.3.4:8000",
 		},
 	}
 
@@ -61,7 +56,7 @@ func Test_Validate(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			address, err := Validate(testCase.value, testCase.options...)
+			err := Validate(testCase.value, testCase.options...)
 
 			if testCase.err != nil {
 				if err == nil {
@@ -73,10 +68,6 @@ func Test_Validate(t *testing.T) {
 				if err != nil {
 					t.Errorf("received an unexpected error %q", err)
 				}
-			}
-
-			if testCase.address != address {
-				t.Errorf("expected address %q but got %q", testCase.address, address)
 			}
 		})
 	}

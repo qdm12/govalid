@@ -14,9 +14,8 @@ func Test_Validator(t *testing.T) {
 	t.Run("address", func(t *testing.T) {
 		t.Parallel()
 		const value = ":8000"
-		output, err := ValidateAddress(value)
+		err := ValidateAddress(value)
 		assertNoError(t, err)
-		assertString(t, ":8000", output)
 	})
 
 	t.Run("binary", func(t *testing.T) {

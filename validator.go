@@ -16,7 +16,7 @@ import (
 	govalidurl "github.com/qdm12/govalid/url"
 )
 
-func ValidateAddress(value string, options ...address.Option) (addr string, err error) {
+func ValidateAddress(value string, options ...address.Option) (err error) {
 	return address.Validate(value, options...)
 }
 

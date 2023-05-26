@@ -16,27 +16,24 @@ var (
 
 // Validate validates the value is a valid address.
 // It does extra checks depending on the options given.
-func Validate(value string, options ...Option) (
-	address string, err error) {
+func Validate(value string, options ...Option) (err error) {
 	s := settings{}
 	for _, option := range options {
 		err := option(&s)
 		if err != nil {
-			return "", fmt.Errorf("%w: %s", ErrOption, err)
+			return fmt.Errorf("%w: %s", ErrOption, err)
 		}
 	}
 
-	host, portStr, err := net.SplitHostPort(value)
+	_, portStr, err := net.SplitHostPort(value)
 	if err != nil {
-		return "", fmt.Errorf("%w: %s", ErrValueNotValid, err)
+		return fmt.Errorf("%w: %s", ErrValueNotValid, err)
 	}
 
 	_, err = port.Validate(portStr, s.portOptions...)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	address = host + ":" + portStr
-
-	return address, nil
+	return nil
 }
