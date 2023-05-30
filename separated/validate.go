@@ -68,6 +68,11 @@ func removeEmpty(values []string) (nonEmptyValues []string) {
 		values[i] = value
 		i++
 	}
+
+	if i == 0 {
+		return nil
+	}
+
 	values = values[:i]
 	return values
 }

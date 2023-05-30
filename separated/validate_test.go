@@ -22,6 +22,10 @@ func Test_Validate(t *testing.T) {
 			options: []Option{badOption},
 			err:     errors.New("option error: some error"),
 		},
+		"empty_string": {
+			value:  "a",
+			values: []string{"a"},
+		},
 		"single value": {
 			value:  "a",
 			values: []string{"a"},
