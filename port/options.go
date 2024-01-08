@@ -29,3 +29,11 @@ func OptionListeningPortPrivilegedAllowed(ports ...uint16) OptionListeningPort {
 		return nil
 	}
 }
+
+// OptionListeningPortZero defines if the zero port is allowed or not.
+func OptionListeningPortZero(disallowed bool) OptionListeningPort {
+	return func(s *settings) (err error) {
+		s.zeroDisallowed = disallowed
+		return nil
+	}
+}
