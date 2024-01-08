@@ -6,6 +6,7 @@ type settings struct {
 	isListening            bool
 	uid                    int
 	privilegedAllowedPorts []uint16 // allowed ports if running without root
+	zeroDisallowed         bool
 }
 
 func newSettings(options ...Option) (s *settings, err error) {

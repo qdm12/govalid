@@ -2,68 +2,97 @@ package port
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 )
 
 func Test_Validate(t *testing.T) {
 	t.Parallel()
 
+	errTest := errors.New("test error")
 	badOption := func(_ *settings) error {
-		return errors.New("some error")
+		return fmt.Errorf("%w", errTest)
 	}
 
 	testCases := map[string]struct {
-		value   string
-		options []Option
-		port    uint16
-		err     error
+		value      string
+		options    []Option
+		port       uint16
+		errWrapped error
+		errMessage string
 	}{
-		"option error": {
-			options: []Option{badOption},
-			err:     errors.New("option error: some error"),
+		"option_error": {
+			options:    []Option{badOption},
+			errWrapped: ErrOption,
+			errMessage: "option error: test error",
 		},
-		"bad string": {
-			value: "a",
-			err:   errors.New("port value is not an integer: a"),
+		"bad_string": {
+			value:      "a",
+			errWrapped: ErrPortNotAnInteger,
+			errMessage: "port value is not an integer: a",
 		},
-		"zero port not allowed": {
-			value: "0",
-			err:   errors.New("port cannot be lower than 1: 0"),
+		"negative_port": {
+			value:      "-1",
+			errWrapped: ErrPortNegative,
+			errMessage: "port cannot be negative: -1",
 		},
-		"zero port for listening": {
+		"port_too_high": {
+			value:      "70000",
+			errWrapped: ErrPortTooHigh,
+			errMessage: "port cannot be higher than 65535: 70000",
+		},
+		"not_listening_zero_port": {
+			value:      "0",
+			errWrapped: ErrPortZero,
+			errMessage: "port cannot be zero",
+		},
+		"not_listening_valid": {
+			value: "80",
+			port:  80,
+		},
+		"listening_non_privileged_port": {
+			value:   "2000",
+			options: []Option{OptionPortListening(1000)},
+			port:    2000,
+		},
+		"listening_zero_port": {
 			value:   "0",
 			options: []Option{OptionPortListening(1000)},
 		},
-		"negative port for listening": {
-			value:   "-1",
-			options: []Option{OptionPortListening(1000)},
-			err:     errors.New("listening port cannot be lower than 0: -1"),
+		"listening_zero_port_disallowed": {
+			value:      "0",
+			options:    []Option{OptionPortListening(1000, OptionListeningPortZero(true))},
+			errWrapped: ErrListenPortZero,
+			errMessage: "listening port cannot be zero",
 		},
-		"port too high": {
-			value: "70000",
-			err:   errors.New("port cannot be higher than 65535: 70000"),
-		},
-		"privileged port as root": {
+		"listening_privileged_port_as_root": {
 			value:   "100",
 			options: []Option{OptionPortListening(0)},
 			port:    100,
 		},
-		"privileged port as windows": {
+		"listening_privileged_port_as_windows": {
 			value:   "100",
 			options: []Option{OptionPortListening(-1)},
 			port:    100,
 		},
-		"privileged port without root": {
-			value:   "100",
-			options: []Option{OptionPortListening(1000)},
-			err: errors.New("invalid listening port: " +
-				"cannot use privileged ports (1 to 1023) when running " +
-				"without root: 100"),
+		"listening_privileged_port_as_uid_1000": {
+			value:      "100",
+			options:    []Option{OptionPortListening(1000)},
+			errWrapped: ErrListenPrivilegedPort,
+			errMessage: "listening port cannot be privileged port: " +
+				"100 when running with uid 1000",
 		},
-		"privileged port without root allowed": {
+		"listening_privileged_port_as_uid_1000_allowed": {
 			value:   "100",
 			options: []Option{OptionPortListening(1000, OptionListeningPortPrivilegedAllowed(100))},
 			port:    100,
+		},
+		"listening_privileged_port_as_uid_1000_not_allowed": {
+			value:      "200",
+			options:    []Option{OptionPortListening(1000, OptionListeningPortPrivilegedAllowed(100))},
+			errWrapped: ErrListenPrivilegedPort,
+			errMessage: "listening port cannot be privileged port: " +
+				"port 200 is not part of allowed ports 100",
 		},
 	}
 
@@ -74,15 +103,13 @@ func Test_Validate(t *testing.T) {
 
 			port, err := Validate(testCase.value, testCase.options...)
 
-			if testCase.err != nil {
-				if err == nil {
-					t.Fatalf("expected an error but got nil instead")
-				} else if testCase.err.Error() != err.Error() {
-					t.Errorf("expected error %q but got %q", testCase.err, err)
-				}
-			} else {
-				if err != nil {
-					t.Errorf("received an unexpected error %q", err)
+			if !errors.Is(err, testCase.errWrapped) {
+				t.Errorf("expected error %q to wrap error %q", err, testCase.errWrapped)
+			}
+
+			if testCase.errWrapped != nil {
+				if err.Error() != testCase.errMessage {
+					t.Errorf("expected error %q but got %q", testCase.errMessage, err)
 				}
 			}
 
